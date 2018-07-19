@@ -36,7 +36,7 @@ public:
     void CursorControl(bool show_cursor, bool blink_cursor) override; //Replaces NoCursor DisplayCursor, BlinkChar, and SolidChar
     void SetLineDisplay(uint8_t lines) override; //Select 1, 2, or 4 line display
     bool CheckBusyFlag() override;//Check busy flag
-    void DisplayControl() override;
+    void DisplayControl(bool on, bool show_cursor, bool blink_cursor) override;
     void ShiftCursor() override;
     void SetFont() override;
     ~I2CBackpack();
