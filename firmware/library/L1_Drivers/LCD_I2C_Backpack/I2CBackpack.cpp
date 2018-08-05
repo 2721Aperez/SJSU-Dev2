@@ -1,11 +1,11 @@
 
-#include "I2CBackpack.hpp"
+#include "LcdI2cBackpack.hpp"
 
 // Slave address: 40h for write, 41h for read
 // This backpack requires data transfer in 4-bit mode
 // 4-bit transfers require all data to be written twice
 
-I2CBackpack::I2CBackpack(uint8_t address_read, uint8_t address_write)
+LcdI2cBackpack::LcdI2cBackpack(uint8_t address_read, uint8_t address_write)
 {
     device_address_read_ = address_read;
     device_address_write_ = address_write;
@@ -29,7 +29,7 @@ I2CBackpack::I2CBackpack(uint8_t address_read, uint8_t address_write)
  *    Increment by 1
  *    No shift
  */
-bool I2CBackpack::Init(FontSize size, DisplayLines lines) //initializes the LCD
+bool LcdI2cBackpack::Init() //initializes the LCD
 {
     uint8_t clear = 0x00;
     uint8_t function_set = 0x03;
@@ -64,29 +64,34 @@ bool I2CBackpack::Init(FontSize size, DisplayLines lines) //initializes the LCD
 
 // Pin configuration requires 4 bit data transfer
 // When 4 bit length is selected, data must be sent or received twice
-void I2CBackpack::Set4BitMode()
+void LcdI2cBackpack::Set4BitMode()
 {
     uint8_t fourBitMode = (0x02);
     Write(fourBitMode, fourBitMode);
 }
 
-void I2CBackpack::ClearScreen()
+void LcdI2cBackpack::ClearScreen()
 {
     Write(kClearDisplay, kClearDisplay);
     ReturnHome();
+} 
+
+void LcdI2cBackpack::SetPosition(uint8_t row, uint8_t col)
+{
+
 }
 
-void I2CBackpack::ReturnHome()
+void LcdI2cBackpack::ReturnHome()
 {
     Write(kReturnHome, kReturnHome);
 }
 
-void I2CBackpack::PrintChar()
+void LcdI2cBackpack::PrintChar()
 {
     
 }
 
-void I2CBackpack::CursorControl(bool show_cursor, bool blink_cursor)
+void LcdI2cBackpack::CursorControl(bool show_cursor, bool blink_cursor)
 {
     uint8_t cursor_option = 0;
     
@@ -112,19 +117,18 @@ void I2CBackpack::CursorControl(bool show_cursor, bool blink_cursor)
     }
 }
 
-
-void I2CBackpack::SetLineDisplay(DisplayLines lines) //Select 1, 2, or 4 lines
+void LcdI2cBackpack::SetLineDisplay(DisplayLines lines)
 {
     display_function_ |= lines;
 }
 
-bool I2CBackpack::CheckBusyFlag()
+bool LcdI2cBackpack::CheckBusyFlag()
 {
     
     return true;
 }
 
-void I2CBackpack::DisplayControl()
+void LcdI2cBackpack::DisplayControl(bool on, bool show_cursor, bool blink_cursor)
 {
     if(on) // Turn on display
     {
@@ -137,17 +141,27 @@ void I2CBackpack::DisplayControl()
     }
 }
 
-void I2CBackpack::SetFont(FontSize size)
+void LcdI2cBackpack::ShiftCursor()
+{
+
+}
+
+void LcdI2cBackpack::SetFont(FontSize size)
 {
     display_control_ |= size;
 }
 
-void I2CBackpack::Write(uint8_t address, uint8_t data)
+LcdI2cBackpack::~LcdI2cBackpack()
+{
+
+}
+
+void LcdI2cBackpack::Write(uint8_t address, uint8_t data)
 {
     writeReg(device_address_write_, address, data);
 }
 
-void I2CBackpack::Read(uint8_t address) const
+void LcdI2cBackpack::Read(uint8_t address) const
 {
     readReg(device_address_read_, address);
 }

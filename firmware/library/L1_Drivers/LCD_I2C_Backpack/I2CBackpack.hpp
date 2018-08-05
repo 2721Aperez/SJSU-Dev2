@@ -5,7 +5,7 @@
 // Import SJOne libraries to be used for testing
 #include "L2_Drivers/base/i2c_base.hpp"
 
-class BackpackInterface
+class LcdBackpackInterface
 {
 public:
     enum FontSize : uint8_t
@@ -31,7 +31,7 @@ public:
     virtual void FunctionSet(FontSize size, DisplayLines lines) = 0;
 }
 
-class I2CBackpack : public BackpackInterface
+class LcdI2cBackpack : public LcdBackpackInterface
 {
 public:
     //Display entry mode
@@ -73,7 +73,7 @@ public:
         kReadWriteBit = 0x02,
         kRegisterSelectBit = 0x01,
     };
-    I2CBackpack(uint8_t address_read, uint8_t address_write);
+    LcdI2cBackpack(uint8_t address_read, uint8_t address_write);
     bool Init() override;
     void Set4BitMode() override;
     void ClearScreen() override;
@@ -84,7 +84,8 @@ public:
     bool CheckBusyFlag() override;
     void DisplayControl() override;
     void SetFont(FontSize size) override;
-    ~I2CBackpack();
+    void FunctionSet(FontSize size, DisplayLines lines) override;
+    ~LcdI2cBackpack();
 private:
     uint8_t device_address_read_;
     uint8_t device_address_write_;
