@@ -1,4 +1,3 @@
-
 #include "LcdI2cBackpack.hpp"
 
 // Slave address: 40h for write, 41h for read
@@ -76,11 +75,6 @@ void LcdI2cBackpack::ClearScreen()
     ReturnHome();
 } 
 
-void LcdI2cBackpack::SetPosition(uint8_t row, uint8_t col)
-{
-
-}
-
 void LcdI2cBackpack::ReturnHome()
 {
     Write(kReturnHome, kReturnHome);
@@ -139,11 +133,6 @@ void LcdI2cBackpack::DisplayControl(bool on, bool show_cursor, bool blink_cursor
     {
         Write(kDisplayOff, kDisplayOff);
     }
-}
-
-void LcdI2cBackpack::ShiftCursor()
-{
-
 }
 
 void LcdI2cBackpack::SetFont(FontSize size)

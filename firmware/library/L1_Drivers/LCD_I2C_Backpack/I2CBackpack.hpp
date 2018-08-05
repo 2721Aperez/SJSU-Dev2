@@ -28,7 +28,6 @@ public:
     virtual bool CheckBusyFlag() = 0;
     virtual void DisplayControl() = 0;
     virtual void SetFont(FontSize size) = 0;
-    virtual void FunctionSet(FontSize size, DisplayLines lines) = 0;
 }
 
 class LcdI2cBackpack : public LcdBackpackInterface
@@ -57,7 +56,6 @@ public:
         kReturnHome = 0x02,
         kEntryModeSet = 0x04,
         kDisplayControl = 0x08,
-        kCursorShift = 0x10,
         kFunctionSet = 0x20,
         kSetCgramAddress = 0x40,
         kSetDdramAddress = 0x80,
@@ -84,7 +82,6 @@ public:
     bool CheckBusyFlag() override;
     void DisplayControl() override;
     void SetFont(FontSize size) override;
-    void FunctionSet(FontSize size, DisplayLines lines) override;
     ~LcdI2cBackpack();
 private:
     uint8_t device_address_read_;
