@@ -2,11 +2,16 @@
 #include "I2CBackpack.hpp"
 
 // Slave address: 40h for write, 41h for read
+// This backpack requires data transfer in 4-bit mode
+// 4-bit transfers require all data to be written twice
 
 I2CBackpack::I2CBackpack(uint8_t address_read, uint8_t address_write)
 {
     device_address_read_ = address_read;
     device_address_write_ = address_write;
+    display_function_ = 0x00;
+    display_control_ = 0x00;
+    display_mode_ = 0x00;
 }
 
 /* An internal reset occurs at power on executing the
@@ -24,7 +29,7 @@ I2CBackpack::I2CBackpack(uint8_t address_read, uint8_t address_write)
  *    Increment by 1
  *    No shift
  */
-bool I2CBackpack::Init() //initializes the LCD
+bool I2CBackpack::Init(FontSize size, DisplayLines lines) //initializes the LCD
 {
     uint8_t clear = 0x00;
     uint8_t function_set = 0x03;
@@ -36,7 +41,7 @@ bool I2CBackpack::Init() //initializes the LCD
     delay_ms(50);
     // Clear the register
     Write(clear, clear);
-    //
+    // Write start up bits
     Write(function_set, function_set);
     delay_ms(5);
     Write(function_set, function_set);
@@ -67,38 +72,24 @@ void I2CBackpack::Set4BitMode()
 
 void I2CBackpack::ClearScreen()
 {
-    // Set the command to clear screen:
-    // 00_00-0000-0001
-    
-    // Sends 20H to all the DDRAM addresses
     Write(kClearDisplay, kClearDisplay);
-    // Set the DDRAM address back to 0 returns the display to its original status 
     ReturnHome();
-} 
-
-void I2CBackpack::SetPosition(uint8_t row, uint8_t col)
-{
-
-} 
+}
 
 void I2CBackpack::ReturnHome()
 {
-    // Set the DDRAM address to 0 
-    // Return the screen into its original state
-    // Move cursor to the left side of the screen (ensure its the first line if using multiple lines)
     Write(kReturnHome, kReturnHome);
-
 }
 
 void I2CBackpack::PrintChar()
 {
-
+    
 }
 
 void I2CBackpack::CursorControl(bool show_cursor, bool blink_cursor)
 {
     uint8_t cursor_option = 0;
-
+    
     if(show_cursor) // DB1 == 1
     {
         cursor_option = kCursorOn | kDisplayOn;
@@ -122,27 +113,18 @@ void I2CBackpack::CursorControl(bool show_cursor, bool blink_cursor)
 }
 
 
-void I2CBackpack::SetLineDisplay(DisplayLines lines)
+void I2CBackpack::SetLineDisplay(DisplayLines lines) //Select 1, 2, or 4 lines
 {
-    switch(lines)
-    {
-        case one:
-            break;
-        case two:
-            break;
-        case four:
-            break;
-        default:
-    }
+    display_function_ |= lines;
 }
 
 bool I2CBackpack::CheckBusyFlag()
 {
-
+    
     return true;
-} 
+}
 
-void I2CBackpack::DisplayControl(bool on, bool show_cursor, bool blink_cursor)
+void I2CBackpack::DisplayControl()
 {
     if(on) // Turn on display
     {
@@ -155,21 +137,9 @@ void I2CBackpack::DisplayControl(bool on, bool show_cursor, bool blink_cursor)
     }
 }
 
-void I2CBackpack::ShiftCursor()
-{
-
-}
-
 void I2CBackpack::SetFont(FontSize size)
 {
-    switch(size)
-    {
-        case small:
-            break;
-        case large:
-            break;
-        default:
-    }
+    display_control_ |= size;
 }
 
 void I2CBackpack::Write(uint8_t address, uint8_t data)
