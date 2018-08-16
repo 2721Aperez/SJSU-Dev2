@@ -1,17 +1,19 @@
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 
-#include "L0_LowLevel/uart0.min.hpp"
+#include "L0_LowLevel/uart0.hpp"
 
-// Overriding printf to supply a static memory .text efficent varient.
-int printf(const char * fmt, ...)
+// Overriding printf to supply a static memory .text efficient variant.
+// NOLINTNEXTLINE(readability-identifier-naming)
+int printf(const char * format, ...)
 {
-    char buffer[256];
+    constexpr size_t kPrintfBufferSize = 256;
+    char buffer[kPrintfBufferSize];
     va_list args;
-    va_start(args, fmt);
-    int length = vsprintf(buffer, fmt, args);
+    va_start(args, format);
+    int length = vsnprintf(buffer, kPrintfBufferSize, format, args);
     va_end(args);
 
-    uart0_puts(buffer);
+    uart0::Puts(buffer);
     return length;
 }
